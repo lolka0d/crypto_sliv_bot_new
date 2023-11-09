@@ -14,7 +14,7 @@ from main.models import User, Plan, Course, UsersToApprove
 
 from cron import unban_user_from_channels
 
-HTTPS_ADDR = "https://django.4bc3946bc032c4.duckdns.org/"
+HTTPS_ADDR = "https://72f9-109-227-124-221.ngrok-free.app/"
 
 course_to_change_name = ""
 course_to_change_description = ""
@@ -26,7 +26,7 @@ get_user_name = False
 mailing_status = False
 plans_to_add_to_user = []
 
-
+[["https://t.me/+6tzqzO_mR0ExNWRi", -1001844384264, "Pentagon 2.0"]]
 def page_not_found(request, exception):
     return HttpResponse('Oops, page not found!')
 
@@ -58,6 +58,7 @@ def home(request):
 
 @csrf_exempt
 def webhook(request):
+    # return HttpResponse(status=200)
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
 
@@ -176,15 +177,20 @@ def webhook(request):
 
                             raw_urls = eval(text)
                             plan_to_change_channels = eval(plan_to_change_channels)
+                            UsersToApprove.objects.all().delete()
+
                             for channel_id in raw_urls:
+
+                                pointer = raw_urls.index(channel_id)
                                 url = f'https://api.telegram.org/bot{settings.TOKEN}/getChat'
 
                                 data = {'chat_id': channel_id}
                                 json_ = requests.post(url, data=data).json()
                                 if json_['ok']:
-                                    raw_urls[raw_urls.index(channel_id)].append(json_['result']['title'])
+                                    raw_urls[pointer].append(json_['result']['title'])
                                 else:
                                     return send_message(user_id, 'Ошибка1')
+
                                 sleep(0.5)
                                 url = f'https://api.telegram.org/bot{settings.TOKEN}/createChatInviteLink'
 
@@ -192,10 +198,18 @@ def webhook(request):
 
                                 json_ = requests.post(url, data=data).json()
                                 if json_['ok']:
-                                    raw_urls[raw_urls.index(channel_id)].insert(0, json_['result']['invite_link'])
+                                    raw_urls[pointer].insert(0, json_['result']['invite_link'])
                                 else:
                                     return send_message(user_id, 'Ошибка2')
                                 sleep(0.5)
+
+                                UsersToApprove.objects.create(
+                                    name=raw_urls[pointer][2],
+                                    channel_id=channel_id[1],
+                                    users_ids="[]",
+                                    created_at=datetime.now()
+                                )
+
                             plan = Plan.objects.get(name="Основний")
 
                             plan.channels = json.dumps(raw_urls)

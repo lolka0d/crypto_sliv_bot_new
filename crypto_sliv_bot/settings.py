@@ -74,7 +74,7 @@ WSGI_APPLICATION = 'crypto_sliv_bot.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# mySQL database
+# MySQL database
 
 DATABASES = {
     'default': {
@@ -134,4 +134,4 @@ CSRF_TRUSTED_ORIGINS = ['https://ifhe8q9m23x8r0n.duckdns.org']
 
 # Telegram bot settings
 
-TOKEN = '6019871647:AAF5nT5putpflIhSLx09L1NWB_Okq6eg6pM'
+TOKEN = '5395795075:AAFvD0Grg4QwUUcbjInF6qo_KBgk74ujQQw'
